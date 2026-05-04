@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PartyKart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial; padding: 15px; }
+    h1 { color: orange; }
+    .item { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+    button { background: orange; color: white; border: none; padding: 10px; }
+    .cart { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+
+<body>
+
+<h1>🎉 PartyKart</h1>
+<p>Small Party? Sorted.</p>
+
+<div class="item">
+  Chicken 65 - ₹250
+  <button onclick="addItem('Chicken 65',250)">Add</button>
+</div>
+
+<div class="item">
+  Paneer Tikka - ₹200
+  <button onclick="addItem('Paneer Tikka',200)">Add</button>
+</div>
+
+<div class="item">
+  Party Combo - ₹999
+  <button onclick="addItem('Party Combo',999)">Add</button>
+</div>
+
+<div class="cart">
+  Total: ₹<span id="total">0</span>
+</div>
+
+<button onclick="order()">Order on WhatsApp</button>
+
+<script>
+let cart = [];
+let total = 0;
+
+function addItem(name, price){
+  cart.push(name + " - ₹" + price);
+  total += price;
+  document.getElementById("total").innerText = total;
+}
+
+function order(){
+  let message = "Hi PartyKart, I want to order:%0A%0A";
+  cart.forEach(item => {
+    message += "- " + item + "%0A";
+  });
+  message += "%0ATotal: ₹" + total;
+
+  window.open("https://wa.me/917899635909?text=" + message);
+}
+</script>
+
+</body>
+</html>
