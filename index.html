@@ -5,29 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-    body { font-family: Arial; background: #f5f5f5; padding: 10px; }
-    h1 { color: #ff6600; }
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #f5f5f5;
+    }
+
+    header {
+      background: #ff6600;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .hero {
+      padding: 20px;
+      text-align: center;
+      background: white;
+    }
+
+    .filters {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+      background: white;
+    }
+
+    .filters button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 20px;
+      background: #ddd;
+    }
+
+    .active {
+      background: #ff6600 !important;
+      color: white;
+    }
+
+    .container {
+      padding: 10px;
+    }
 
     .card {
       background: white;
-      padding: 10px;
       margin: 10px 0;
       border-radius: 10px;
+      overflow: hidden;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    img {
+    .card img {
       width: 100%;
-      border-radius: 10px;
+      height: 180px;
+      object-fit: cover;
     }
 
-    button {
+    .card-content {
+      padding: 10px;
+    }
+
+    .price {
+      color: green;
+      font-weight: bold;
+    }
+
+    .add-btn {
       background: #ff6600;
       color: white;
       border: none;
-      padding: 8px;
+      padding: 8px 12px;
       border-radius: 5px;
-      margin-top: 5px;
+      float: right;
+    }
+
+    .form {
+      background: white;
+      padding: 10px;
+      margin-top: 10px;
     }
 
     input {
@@ -38,14 +95,11 @@
 
     .order-btn {
       width: 100%;
+      padding: 12px;
       background: #25D366;
-      padding: 12px;
-    }
-
-    .pay-btn {
-      width: 100%;
-      background: purple;
-      padding: 12px;
+      border: none;
+      color: white;
+      font-size: 16px;
       margin-top: 10px;
     }
   </style>
@@ -53,77 +107,92 @@
 
 <body>
 
-<h1>🎉 PartyKart</h1>
-<p>Small Party? Sorted.</p>
+<header>🎉 PartyKart Catering</header>
 
-<div class="card">
-  <img src="https://source.unsplash.com/400x300/?chicken">
-  Chicken 65 - ₹250
-  <button onclick="addItem('Chicken 65',250)">Add</button>
+<div class="hero">
+  <h2>Small Party? Big Taste!</h2>
+  <p>Premium catering for every occasion</p>
 </div>
 
-<div class="card">
-  <img src="https://source.unsplash.com/400x300/?paneer">
-  Paneer Tikka - ₹200
-  <button onclick="addItem('Paneer Tikka',200)">Add</button>
+<div class="filters">
+  <button class="active" onclick="filter('all')">All</button>
+  <button onclick="filter('veg')">Veg</button>
+  <button onclick="filter('nonveg')">Non-Veg</button>
+  <button onclick="filter('combo')">Combos</button>
 </div>
 
-<div class="card">
-  <img src="https://source.unsplash.com/400x300/?snacks">
-  Party Combo - ₹999
-  <button onclick="addItem('Party Combo',999)">Add</button>
+<div class="container" id="menu"></div>
+
+<div class="form">
+  <h3>Customer Details</h3>
+  <input id="name" placeholder="Name">
+  <input id="phone" placeholder="Phone">
+  <input id="address" placeholder="Address">
+  <input type="datetime-local" id="time">
+
+  <h3>Total: ₹<span id="total">0</span></h3>
+
+  <button class="order-btn" onclick="order()">Order on WhatsApp</button>
 </div>
-
-<h3>Total: ₹<span id="total">0</span></h3>
-
-<h3>Customer Details</h3>
-
-<input type="text" id="name" placeholder="Your Name">
-<input type="text" id="phone" placeholder="Phone Number">
-<input type="text" id="address" placeholder="Address">
-
-<h3>Delivery Time</h3>
-<input type="datetime-local" id="time">
-
-<button class="order-btn" onclick="order()">Order on WhatsApp</button>
-
-<button class="pay-btn" onclick="pay()">Pay via UPI</button>
 
 <script>
 let cart = [];
 let total = 0;
+let currentFilter = "all";
+
+const items = [
+  {name:"Chicken 65", price:250, cat:"nonveg", img:"https://source.unsplash.com/400x300/?chicken"},
+  {name:"Paneer Tikka", price:200, cat:"veg", img:"https://source.unsplash.com/400x300/?paneer"},
+  {name:"Veg Manchurian", price:180, cat:"veg", img:"https://source.unsplash.com/400x300/?veg-food"},
+  {name:"Party Combo", price:999, cat:"combo", img:"https://source.unsplash.com/400x300/?party-food"}
+];
+
+function render(){
+  let html = "";
+  items.forEach(item=>{
+    if(currentFilter==="all" || item.cat===currentFilter){
+      html += `
+        <div class="card">
+          <img src="${item.img}">
+          <div class="card-content">
+            <b>${item.name}</b><br>
+            <span class="price">₹${item.price}</span>
+            <button class="add-btn" onclick="addItem('${item.name}',${item.price})">Add</button>
+          </div>
+        </div>
+      `;
+    }
+  });
+  document.getElementById("menu").innerHTML = html;
+}
+
+function filter(cat){
+  currentFilter = cat;
+  document.querySelectorAll(".filters button").forEach(btn=>btn.classList.remove("active"));
+  event.target.classList.add("active");
+  render();
+}
 
 function addItem(name, price){
-  cart.push(name + " - ₹" + price);
+  cart.push(name + " ₹" + price);
   total += price;
   document.getElementById("total").innerText = total;
 }
 
 function order(){
-  let name = document.getElementById("name").value;
-  let phone = document.getElementById("phone").value;
-  let address = document.getElementById("address").value;
-  let time = document.getElementById("time").value;
+  let msg = "Hi PartyKart, Order:%0A%0A";
+  cart.forEach(i=>msg += "- " + i + "%0A");
 
-  let message = "Hi PartyKart, Order:%0A%0A";
+  msg += "%0ATotal: ₹" + total;
+  msg += "%0AName: " + document.getElementById("name").value;
+  msg += "%0APhone: " + document.getElementById("phone").value;
+  msg += "%0AAddress: " + document.getElementById("address").value;
+  msg += "%0ATime: " + document.getElementById("time").value;
 
-  cart.forEach(item => {
-    message += "- " + item + "%0A";
-  });
-
-  message += "%0ATotal: ₹" + total;
-  message += "%0AName: " + name;
-  message += "%0APhone: " + phone;
-  message += "%0AAddress: " + address;
-  message += "%0ATime: " + time;
-
-  window.open("https://wa.me/917899635909?text=" + message);
+  window.open("https://wa.me/917899635909?text=" + msg);
 }
 
-function pay(){
-  let upi = "upi://pay?pa=yourupi@upi&pn=PartyKart&am=" + total;
-  window.open(upi);
-}
+render();
 </script>
 
 </body>
