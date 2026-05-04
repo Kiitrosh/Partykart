@@ -1,14 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PartyKart</title>
+  <title>PartyKart Catering</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
-    body { font-family: Arial; padding: 15px; }
-    h1 { color: orange; }
-    .item { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
-    button { background: orange; color: white; border: none; padding: 10px; }
-    .cart { margin-top: 20px; font-weight: bold; }
+    body { font-family: Arial; background: #f5f5f5; padding: 10px; }
+    h1 { color: #ff6600; }
+
+    .card {
+      background: white;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+    }
+
+    .order-btn {
+      width: 100%;
+      background: #25D366;
+      padding: 12px;
+    }
+
+    .pay-btn {
+      width: 100%;
+      background: purple;
+      padding: 12px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 
@@ -17,26 +56,38 @@
 <h1>🎉 PartyKart</h1>
 <p>Small Party? Sorted.</p>
 
-<div class="item">
+<div class="card">
+  <img src="https://source.unsplash.com/400x300/?chicken">
   Chicken 65 - ₹250
   <button onclick="addItem('Chicken 65',250)">Add</button>
 </div>
 
-<div class="item">
+<div class="card">
+  <img src="https://source.unsplash.com/400x300/?paneer">
   Paneer Tikka - ₹200
   <button onclick="addItem('Paneer Tikka',200)">Add</button>
 </div>
 
-<div class="item">
+<div class="card">
+  <img src="https://source.unsplash.com/400x300/?snacks">
   Party Combo - ₹999
   <button onclick="addItem('Party Combo',999)">Add</button>
 </div>
 
-<div class="cart">
-  Total: ₹<span id="total">0</span>
-</div>
+<h3>Total: ₹<span id="total">0</span></h3>
 
-<button onclick="order()">Order on WhatsApp</button>
+<h3>Customer Details</h3>
+
+<input type="text" id="name" placeholder="Your Name">
+<input type="text" id="phone" placeholder="Phone Number">
+<input type="text" id="address" placeholder="Address">
+
+<h3>Delivery Time</h3>
+<input type="datetime-local" id="time">
+
+<button class="order-btn" onclick="order()">Order on WhatsApp</button>
+
+<button class="pay-btn" onclick="pay()">Pay via UPI</button>
 
 <script>
 let cart = [];
@@ -49,13 +100,29 @@ function addItem(name, price){
 }
 
 function order(){
-  let message = "Hi PartyKart, I want to order:%0A%0A";
+  let name = document.getElementById("name").value;
+  let phone = document.getElementById("phone").value;
+  let address = document.getElementById("address").value;
+  let time = document.getElementById("time").value;
+
+  let message = "Hi PartyKart, Order:%0A%0A";
+
   cart.forEach(item => {
     message += "- " + item + "%0A";
   });
+
   message += "%0ATotal: ₹" + total;
+  message += "%0AName: " + name;
+  message += "%0APhone: " + phone;
+  message += "%0AAddress: " + address;
+  message += "%0ATime: " + time;
 
   window.open("https://wa.me/917899635909?text=" + message);
+}
+
+function pay(){
+  let upi = "upi://pay?pa=yourupi@upi&pn=PartyKart&am=" + total;
+  window.open(upi);
 }
 </script>
 
